@@ -3,13 +3,21 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: FireGuard AI - Hybrid fire detection system API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: sensors
+    description: IoT sensor operations
+  - name: alerts
+    description: Alert management operations
+  - name: detection
+    description: ML fire detection operations
+  - name: dashboard
+    description: Dashboard summary operations
 paths:
   /healthz:
     get:
@@ -24,6 +32,132 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+  /sensors:
+    get:
+      operationId: listSensors
+      tags: [sensors]
+      summary: List all sensors
+      description: Returns all registered IoT sensors with current readings
+      responses:
+        "200":
+          description: List of sensors
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Sensor"
+  /sensors/{id}:
+    get:
+      operationId: getSensor
+      tags: [sensors]
+      summary: Get sensor by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Sensor details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Sensor"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /detect:
+    post:
+      operationId: runDetection
+      tags: [detection]
+      summary: Run fire detection
+      description: Triggers ML fire detection analysis on current sensor data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DetectRequest"
+      responses:
+        "200":
+          description: Detection result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DetectionResult"
+  /alerts:
+    get:
+      operationId: listAlerts
+      tags: [alerts]
+      summary: List all alerts
+      description: Returns all fire alerts sorted by time descending
+      responses:
+        "200":
+          description: List of alerts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Alert"
+  /alerts/{id}/acknowledge:
+    post:
+      operationId: acknowledgeAlert
+      tags: [alerts]
+      summary: Acknowledge an alert
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Alert acknowledged
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Alert"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /dashboard/summary:
+    get:
+      operationId: getDashboardSummary
+      tags: [dashboard]
+      summary: Get dashboard summary
+      description: Returns aggregated stats for the dashboard overview
+      responses:
+        "200":
+          description: Dashboard summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardSummary"
+  /dashboard/activity:
+    get:
+      operationId: getRecentActivity
+      tags: [dashboard]
+      summary: Get recent activity feed
+      description: Returns recent sensor events and detections
+      responses:
+        "200":
+          description: Recent activity
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ActivityEvent"
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +168,189 @@ components:
       required:
         - status
 
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error
+
+    Sensor:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        location:
+          type: string
+        status:
+          type: string
+          enum: [online, offline, warning, critical]
+        temperature:
+          type: number
+          description: Temperature in Celsius
+        humidity:
+          type: number
+          description: Humidity percentage
+        smokeLevel:
+          type: number
+          description: Smoke level (0-100)
+        coLevel:
+          type: number
+          description: CO level in ppm
+        lastReading:
+          type: string
+          format: date-time
+        fireRisk:
+          type: string
+          enum: [low, medium, high, critical]
+      required:
+        - id
+        - name
+        - location
+        - status
+        - temperature
+        - humidity
+        - smokeLevel
+        - coLevel
+        - lastReading
+        - fireRisk
+
+    DetectRequest:
+      type: object
+      properties:
+        sensorId:
+          type: integer
+        temperature:
+          type: number
+        smokeLevel:
+          type: number
+        coLevel:
+          type: number
+      required:
+        - sensorId
+        - temperature
+        - smokeLevel
+        - coLevel
+
+    DetectionResult:
+      type: object
+      properties:
+        sensorId:
+          type: integer
+        fire:
+          type: boolean
+        confidence:
+          type: number
+          description: ML confidence score 0-1
+        riskLevel:
+          type: string
+          enum: [low, medium, high, critical]
+        recommendation:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+      required:
+        - sensorId
+        - fire
+        - confidence
+        - riskLevel
+        - recommendation
+        - timestamp
+
+    Alert:
+      type: object
+      properties:
+        id:
+          type: integer
+        sensorId:
+          type: integer
+        sensorName:
+          type: string
+        location:
+          type: string
+        severity:
+          type: string
+          enum: [info, warning, critical]
+        message:
+          type: string
+        acknowledged:
+          type: boolean
+        mlConfidence:
+          type: number
+        temperature:
+          type: number
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - sensorId
+        - sensorName
+        - location
+        - severity
+        - message
+        - acknowledged
+        - mlConfidence
+        - temperature
+        - createdAt
+
+    DashboardSummary:
+      type: object
+      properties:
+        totalSensors:
+          type: integer
+        activeSensors:
+          type: integer
+        criticalAlerts:
+          type: integer
+        resolvedAlerts:
+          type: integer
+        avgTemperature:
+          type: number
+        systemStatus:
+          type: string
+          enum: [normal, elevated, danger, critical]
+        lastScanTime:
+          type: string
+          format: date-time
+        mlModelAccuracy:
+          type: number
+      required:
+        - totalSensors
+        - activeSensors
+        - criticalAlerts
+        - resolvedAlerts
+        - avgTemperature
+        - systemStatus
+        - lastScanTime
+        - mlModelAccuracy
+
+    ActivityEvent:
+      type: object
+      properties:
+        id:
+          type: integer
+        type:
+          type: string
+          enum: [detection, sensor_update, alert, acknowledgment, system]
+        message:
+          type: string
+        sensorName:
+          type: string
+        severity:
+          type: string
+          enum: [info, warning, critical]
+        timestamp:
+          type: string
+          format: date-time
+      required:
+        - id
+        - type
+        - message
+        - sensorName
+        - severity
+        - timestamp

@@ -1,0 +1,159 @@
+You are a senior full-stack engineer. Build a production-ready SaaS project called **FireGuard AI**.
+
+IMPORTANT: Generate the project STEP-BY-STEP in small parts. Do NOT generate everything at once. Wait for my confirmation after each step.
+
+---
+
+🎯 GOAL:
+Create a clean, modular, deployable SaaS app that demonstrates a hybrid fire detection system (IoT + ML simulation + real-time alerts).
+
+---
+
+📂 STEP 1: PROJECT STRUCTURE
+
+Create this exact structure:
+
+/fireguard-ai
+/frontend  (React + Vite + Tailwind)
+/backend   (Node.js + Express)
+/ml-service (Python FastAPI - mock inference)
+/shared
+README.md
+.env.example
+
+Only generate folder structure and basic setup commands.
+
+STOP after this step.
+
+---
+
+📂 STEP 2: FRONTEND SETUP
+
+Inside /frontend:
+
+* Setup Vite + React
+* Install Tailwind CSS
+* Create clean SaaS UI with:
+
+  * Sidebar (Dashboard, Alerts, Demo)
+  * Dark theme
+  * Cards UI
+
+Pages:
+
+* Dashboard.jsx
+* Alerts.jsx
+* Demo.jsx
+
+Use dummy data first.
+
+STOP.
+
+---
+
+📂 STEP 3: BACKEND API
+
+Inside /backend:
+
+* Setup Express server
+* Routes:
+  GET /status
+  POST /detect
+  GET /alerts
+
+Return mock data:
+
+* temperature
+* sensor status
+* ML result
+* confidence
+
+STOP.
+
+---
+
+📂 STEP 4: ML SERVICE
+
+Inside /ml-service:
+
+* Setup FastAPI
+* Endpoint:
+  POST /predict
+
+Return:
+{
+"fire": true,
+"confidence": 0.92
+}
+
+(No heavy ML model, just simulation)
+
+STOP.
+
+---
+
+📂 STEP 5: CONNECT SYSTEM
+
+* Connect frontend → backend → ml-service
+* Show real-time data on dashboard
+* Implement decision logic:
+  fire = sensor HIGH AND ML true
+
+STOP.
+
+---
+
+📂 STEP 6: ALERT SYSTEM
+
+* Add alert logging system
+* Simulate Telegram alert (console log is fine)
+* Show alerts in UI
+
+STOP.
+
+---
+
+📂 STEP 7: UI POLISH (IMPORTANT)
+
+Make UI premium:
+
+* Glassmorphism cards
+* Smooth animations
+* Modern SaaS look (like Stripe)
+
+STOP.
+
+---
+
+📂 STEP 8: DEPLOYMENT READY
+
+Prepare:
+
+* frontend → Vercel ready
+* backend → Render ready
+* add .env support
+* add scripts
+
+STOP.
+
+---
+
+📂 STEP 9: GITHUB READY
+
+* Write professional README
+* Add run instructions
+* Clean code
+
+---
+
+⚠️ RULES:
+
+* Always generate ONE step at a time
+* Wait for my "continue"
+* Keep code clean and modular
+* Use best practices
+
+---
+
+🎯 FINAL RESULT:
+A clean SaaS-level project ready for deployment and resume.
