@@ -21,6 +21,13 @@ export default function Sensors() {
       </div>
     );
   }
+  if (!sensors || sensors.length === 0) {
+  return (
+    <div className="flex h-full items-center justify-center text-muted-foreground">
+      No sensors connected yet (Simulation Mode)
+    </div>
+  );
+}
 
   return (
     <motion.div variants={containerVariants} initial="hidden" animate="show" className="space-y-6">
