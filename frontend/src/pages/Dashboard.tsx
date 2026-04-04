@@ -26,14 +26,17 @@ export default function Dashboard() {
   const { data: activity, isLoading: loadingActivity } = useQuery({ queryKey: QUERY_KEYS.dashboardActivity, queryFn: getRecentActivity });
   const { data: sensors,  isLoading: loadingSensors  } = useQuery({ queryKey: QUERY_KEYS.sensors,           queryFn: getAllSensors });
 
-  if (loadingSummary || loadingActivity || loadingSensors) {
-    return (
-      <div className="flex h-full items-center justify-center text-muted-foreground">
-        Initializing systems...
-      </div>
-    );
-  }
-
+  if (
+  (loadingSummary && !summary) ||
+  (loadingActivity && !activity) ||
+  (loadingSensors && !sensors)
+) {
+  return (
+    <div className="flex h-full items-center justify-center text-muted-foreground">
+      Initializing systems...
+    </div>
+  );
+}
   const hasCriticalAlerts = (summary?.criticalAlerts ?? 0) > 0;
 
   return (
@@ -46,7 +49,7 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatCard
           label="Active Sensors"
-          value={`${summary?.activeSensors} / ${summary?.totalSensors}`}
+          value={`${summary?.activeSensors ?? 0} / ${summary?.totalSensors ?? 0}`}
           icon={<Cpu className="h-4 w-4 text-primary" />}
           subtext={
             <span className="flex items-center gap-1">
@@ -59,7 +62,7 @@ export default function Dashboard() {
           label="Critical Alerts"
           value={
             <span className={hasCriticalAlerts ? "text-destructive" : undefined}>
-              {summary?.criticalAlerts}
+              {summary?.criticalAlerts ?? 0}
             </span>
           }
           icon={<Bell className={`h-4 w-4 ${hasCriticalAlerts ? "text-destructive animate-bounce" : "text-muted-foreground"}`} />}
@@ -68,7 +71,7 @@ export default function Dashboard() {
         />
         <StatCard
           label="Avg Temperature"
-          value={`${summary?.avgTemperature.toFixed(1)}°C`}
+          value={`${(summary?.avgTemperature ?? 0).toFixed(1)}°C`}
           icon={<Flame className="h-4 w-4 text-orange-500" />}
           subtext="Across all zones"
         />
