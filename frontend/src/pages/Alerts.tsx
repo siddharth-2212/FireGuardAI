@@ -32,12 +32,20 @@ export default function Alerts() {
   });
 
   if (isLoading) {
-    return (
-      <div className="flex h-full items-center justify-center text-muted-foreground">
-        Loading alerts...
-      </div>
-    );
-  }
+  return (
+    <div className="flex h-full items-center justify-center text-muted-foreground">
+      Loading alerts...
+    </div>
+  );
+}
+
+if (!alerts || alerts.length === 0) {
+  return (
+    <div className="flex h-full items-center justify-center text-muted-foreground">
+      No alerts available (Simulation Mode)
+    </div>
+  );
+}
 
   return (
     <motion.div
@@ -60,12 +68,6 @@ export default function Alerts() {
             isAcknowledging={acknowledgeMutation.isPending}
           />
         ))}
-
-        {alerts?.length === 0 && (
-          <div className="text-center py-12 text-muted-foreground bg-card/20 rounded-xl border border-white/5">
-            No active alerts. System is clear.
-          </div>
-        )}
       </div>
     </motion.div>
   );
