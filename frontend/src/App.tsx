@@ -34,6 +34,7 @@ function Router() {
         <Route path="/alerts"  component={Alerts} />
         <Route path="/sensors" component={Sensors} />
         <Route path="/demo"    component={Demo} />
+        <Route path="/settings" component={Dashboard} />
         <Route component={NotFound} />
       </Switch>
     </AppLayout>
