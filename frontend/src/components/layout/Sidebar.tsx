@@ -1,3 +1,4 @@
+import { Link } from "wouter";
 import { Link, useLocation } from "wouter";
 import { Flame, LayoutDashboard, Bell, Cpu, Activity, Settings } from "lucide-react";
 import { motion } from "framer-motion";
@@ -51,21 +52,27 @@ export function Sidebar() {
   );
 })}
           
-      </nav>
+     </nav>
 
-      <div className="p-4 border-t border-sidebar-border/50">
-        <div className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-muted-foreground hover:text-sidebar-foreground hover:bg-sidebar-accent/50 transition-colors cursor-pointer">
-          <Settings className="w-5 h-5" />
-          <span className="font-medium text-sm">Settings</span>
-        </div>
-        <div className="mt-4 p-4 rounded-xl bg-card border border-border/50">
-          <div className="flex items-center gap-2 mb-2">
-            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">SYSTEM STATUS</span>
-          </div>
-          <p className="text-sm font-medium text-foreground">All systems operational</p>
-        </div>
-      </div>
+<div className="p-4 border-t border-sidebar-border/50">
+  {/* ✅ SETTINGS BUTTON FIXED */}
+  <Link href="/settings">
+    <a className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-muted-foreground hover:text-sidebar-foreground hover:bg-sidebar-accent/50 transition-colors">
+      <Settings className="w-5 h-5" />
+      <span className="font-medium text-sm">Settings</span>
+    </a>
+  </Link>
+
+  {/* SYSTEM STATUS (UNCHANGED) */}
+  <div className="mt-4 p-4 rounded-xl bg-card border border-border/50">
+    <div className="flex items-center gap-2 mb-2">
+      <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+      <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+        SYSTEM STATUS
+      </span>
     </div>
-  );
-}
+    <p className="text-sm font-medium text-foreground">
+      All systems operational
+    </p>
+  </div>
+</div>
