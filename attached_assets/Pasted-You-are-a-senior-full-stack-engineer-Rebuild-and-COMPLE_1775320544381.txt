@@ -1,0 +1,203 @@
+You are a senior full-stack engineer. Rebuild and COMPLETE this project into a production-ready SaaS called **FireGuard AI**.
+
+⚠️ IMPORTANT:
+The previous generation stopped midway. You must COMPLETE and FIX everything so the project runs end-to-end without errors.
+
+---
+
+🎯 GOAL:
+A fully working SaaS system with:
+
+* Frontend (React UI)
+* Backend (Node.js API)
+* ML Service (Python FastAPI)
+  All running independently and connected.
+
+---
+
+📂 FINAL STRUCTURE (STRICT):
+
+/frontend
+/backend
+/ml-service
+
+---
+
+# 🔥 STEP 1: FIX & COMPLETE FRONTEND
+
+Ensure /frontend is a COMPLETE Vite React app.
+
+Must include:
+
+* package.json
+* vite.config.js
+* index.html
+* /src folder
+
+Inside /src:
+
+/components
+/pages
+/services
+/hooks
+/layouts
+
+---
+
+📌 REQUIRED PAGES:
+
+1. Dashboard.jsx
+
+* Show:
+
+  * temperature
+  * flame status
+  * ML result
+  * confidence
+  * FINAL STATUS (SAFE / FIRE)
+
+2. Alerts.jsx
+
+* Show alert logs list
+
+3. Demo.jsx
+
+* Simulate detection (button trigger)
+
+---
+
+📌 FRONTEND LOGIC:
+
+* Fetch from backend:
+  GET /api/status
+* Use polling every 3 sec
+* Clean UI (Tailwind)
+
+---
+
+# 🔥 STEP 2: FIX & COMPLETE BACKEND
+
+Ensure /backend is a FULL Express server.
+
+Must include:
+
+/routes
+/controllers
+/services
+/utils
+
+---
+
+📌 REQUIRED APIs:
+
+POST /api/sensor
+GET /api/status
+GET /api/alerts
+
+---
+
+📌 LOGIC:
+
+* Receive:
+  temperature, flame
+* Call ML service:
+  POST http://localhost:8000/predict
+* Combine result:
+  fireDetected = flame && ml.fire
+* Store latest data
+* Store alerts if fireDetected == true
+
+---
+
+# 🔥 STEP 3: COMPLETE ML SERVICE
+
+In /ml-service:
+
+Use FastAPI.
+
+Endpoint:
+POST /predict
+
+Return:
+{
+"fire": true,
+"confidence": 0.92
+}
+
+(No heavy ML needed)
+
+---
+
+# 🔥 STEP 4: CONNECT EVERYTHING
+
+* Backend calls ML service
+* Frontend calls backend
+* Ensure no broken imports
+
+---
+
+# 🔥 STEP 5: MAKE IT RUN LOCALLY
+
+Each must run independently:
+
+Frontend:
+npm install
+npm run dev
+
+Backend:
+npm install
+npm start
+
+ML:
+pip install fastapi uvicorn
+uvicorn main:app --reload
+
+---
+
+# 🔥 STEP 6: MAKE IT DEPLOYMENT READY
+
+* Use environment variables
+* No hardcoded localhost in final config
+* Add .env.example
+
+---
+
+# 🔥 STEP 7: CODE QUALITY (VERY IMPORTANT)
+
+Follow STRICT rules:
+
+* No huge files
+* Use meaningful names
+* Clean architecture
+* Separate logic properly
+* Add useful comments (WHY, not WHAT)
+* Avoid generic AI patterns
+
+---
+
+# 🔥 STEP 8: FINAL CHECK
+
+Ensure:
+
+* No missing files
+* No broken imports
+* No incomplete code
+* Everything runs without error
+
+---
+
+🎯 FINAL OUTPUT:
+
+* Fully working SaaS project
+* Clean structure
+* Human-like code
+* Ready for GitHub + deployment
+
+---
+
+⚠️ GENERATION RULE:
+
+* Complete EVERYTHING
+* Do NOT stop midway
+* Do NOT leave placeholders
+* Ensure full working state
