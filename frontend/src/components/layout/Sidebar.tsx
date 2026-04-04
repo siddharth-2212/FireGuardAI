@@ -24,31 +24,33 @@ export function Sidebar() {
       </div>
 
       <nav className="flex-1 px-4 space-y-1 mt-6">
-        {NAV_ITEMS.map((item) => {
-          const isActive = location === item.href;
-          return (
-            <Link key={item.href} href={item.href}>
-              <div
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 cursor-pointer relative group ${
-                  isActive
-                    ? "text-primary-foreground"
-                    : "text-muted-foreground hover:text-sidebar-foreground hover:bg-sidebar-accent/50"
-                }`}
-              >
-                {isActive && (
-                  <motion.div
-                    layoutId="activeNavIndicator"
-                    className="absolute inset-0 bg-primary/10 border border-primary/20 rounded-lg -z-10"
-                    initial={false}
-                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                  />
-                )}
-                <item.icon className={`w-5 h-5 ${isActive ? "text-primary" : ""}`} />
-                <span className="font-medium text-sm">{item.label}</span>
-              </div>
-            </Link>
-          );
-        })}
+       {NAV_ITEMS.map((item) => {
+  const isActive = location === item.href;
+
+  return (
+    <Link key={item.href} href={item.href}>
+      <a
+        className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 relative group ${
+          isActive
+            ? "text-primary-foreground"
+            : "text-muted-foreground hover:text-sidebar-foreground hover:bg-sidebar-accent/50"
+        }`}
+      >
+        {isActive && (
+          <motion.div
+            layoutId="activeNavIndicator"
+            className="absolute inset-0 bg-primary/10 border border-primary/20 rounded-lg -z-10"
+            initial={false}
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+          />
+        )}
+        <item.icon className={`w-5 h-5 ${isActive ? "text-primary" : ""}`} />
+        <span className="font-medium text-sm">{item.label}</span>
+      </a>
+    </Link>
+  );
+})}
+          
       </nav>
 
       <div className="p-4 border-t border-sidebar-border/50">
