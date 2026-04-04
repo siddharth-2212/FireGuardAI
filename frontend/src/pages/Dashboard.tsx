@@ -20,17 +20,13 @@ const containerVariants = {
 
 export default function Dashboard() {
   // Invalidates sensor + activity + summary queries every 5s in the background
-  useLiveDashboardPolling();
+  //useLiveDashboardPolling();
 
   const { data: summary,  isLoading: loadingSummary  } = useQuery({ queryKey: QUERY_KEYS.dashboardSummary,  queryFn: getDashboardSummary });
   const { data: activity, isLoading: loadingActivity } = useQuery({ queryKey: QUERY_KEYS.dashboardActivity, queryFn: getRecentActivity });
   const { data: sensors,  isLoading: loadingSensors  } = useQuery({ queryKey: QUERY_KEYS.sensors,           queryFn: getAllSensors });
 
-  if (
-  (loadingSummary && !summary) ||
-  (loadingActivity && !activity) ||
-  (loadingSensors && !sensors)
-) {
+ if (!summary || !activity || !sensors) {
   return (
     <div className="flex h-full items-center justify-center text-muted-foreground">
       Initializing systems...
