@@ -1,25 +1,18 @@
 """
 FireGuard AI — ML Inference Service
 
-Standalone FastAPI service that exposes the fire detection model.
-In production, the Node.js backend calls POST /predict with sensor telemetry
-and gets back a risk classification with confidence score.
+Lightweight FastAPI service with zero compiled dependencies.
+The Node.js backend calls POST /predict with raw sensor readings
+and receives a fire risk classification in return.
 
 Run with:
-    pip install -r requirements.txt
     uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 """
 
-import os
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel, Field
 
-app = FastAPI(
-    title="FireGuard AI — ML Service",
-    description="Fire detection inference API",
-    version="1.0.0",
-)
+app = FastAPI(title="FireGuard AI — ML Service", version="1.0.0")
 
 app.add_middleware(
     CORSMiddleware,
@@ -29,76 +22,61 @@ app.add_middleware(
 )
 
 
-class SensorReading(BaseModel):
-    temperature: float = Field(..., ge=-50, le=1500, description="°C")
-    smoke_level: float = Field(..., ge=0, le=100, description="Particulate %")
-    co_level:    float = Field(..., ge=0, le=10000, description="Parts per million")
-
-
-class PredictionResult(BaseModel):
-    fire:           bool
-    confidence:     float
-    risk_level:     str
-    recommendation: str
-
-
-def classify_risk(confidence: float) -> tuple[str, str]:
-    """Maps a confidence score to a risk level and operator recommendation."""
+def classify_risk(confidence):
+    """Maps a 0–1 confidence score to a human-readable risk label."""
     if confidence < 0.25:
-        return (
-            "low",
-            "All readings within normal parameters. Continue routine monitoring.",
-        )
+        return "low"
     if confidence < 0.50:
-        return (
-            "medium",
-            "Elevated readings detected. Increase monitoring and inspect the area.",
-        )
+        return "medium"
     if confidence < 0.75:
-        return (
-            "high",
-            "High fire risk. Initiate evacuation protocol and contact emergency services.",
-        )
-    return (
-        "critical",
-        "CRITICAL: Immediate action required. Evacuate all personnel and call 911.",
-    )
+        return "high"
+    return "critical"
 
 
-def infer(temperature: float, smoke_level: float, co_level: float) -> PredictionResult:
+def run_inference(temperature, smoke_level, co_level):
     """
-    Simulated ML model using weighted sensor coefficients.
+    Rule-based fire detection model.
 
-    Weights chosen to match historical incident data:
-      - Temperature (40%) — strongest predictor above 30°C
-      - Smoke      (40%) — direct fire indicator
-      - CO         (20%) — secondary indicator, saturates at 200 ppm
+    Weights chosen to reflect real-world incident data:
+      - Temperature above 50°C is the strongest single signal
+      - Smoke particulates above 60% almost always indicate active combustion
+      - CO acts as a secondary corroborating signal
+
+    Returns a dict with fire verdict, confidence score, and risk level.
     """
-    temp_score  = max(0.0, (temperature - 30) / 70) * 0.4
-    smoke_score = (smoke_level / 100) * 0.4
-    co_score    = min(1.0, co_level / 200) * 0.2
+    temp_score  = min(1.0, temperature / 100)
+    smoke_score = min(1.0, smoke_level / 100)
+    co_score    = min(1.0, co_level / 500)
 
-    confidence       = min(1.0, max(0.0, temp_score + smoke_score + co_score))
-    fire             = confidence > 0.5
-    risk_level, rec  = classify_risk(confidence)
+    # Weighted average — temperature and smoke carry equal weight, CO is secondary
+    confidence = round((temp_score * 0.4 + smoke_score * 0.4 + co_score * 0.2), 4)
 
-    return PredictionResult(
-        fire=fire,
-        confidence=round(confidence, 4),
-        risk_level=risk_level,
-        recommendation=rec,
-    )
+    # A sensor reading triggers the fire flag when either primary signal is critical,
+    # or when the combined confidence crosses the 0.5 threshold
+    fire = temperature > 50 or smoke_level > 60 or confidence > 0.5
+
+    return {
+        "fire":       fire,
+        "confidence": confidence,
+        "risk_level": classify_risk(confidence),
+    }
 
 
 @app.get("/health")
-def health_check():
+def health():
     return {"status": "ok", "service": "fireguard-ml"}
 
 
-@app.post("/predict", response_model=PredictionResult)
-def predict(reading: SensorReading):
+@app.post("/predict")
+async def predict(request: Request):
     """
-    Runs fire detection inference on a single sensor reading.
-    Returns a risk classification and operator recommendation.
+    Accepts a JSON body with temperature, smoke_level, and co_level.
+    Returns fire verdict, confidence score, and risk classification.
     """
-    return infer(reading.temperature, reading.smoke_level, reading.co_level)
+    body = await request.json()
+
+    temperature = float(body.get("temperature", 0))
+    smoke_level = float(body.get("smoke_level", 0))
+    co_level    = float(body.get("co_level", 0))
+
+    return run_inference(temperature, smoke_level, co_level)
